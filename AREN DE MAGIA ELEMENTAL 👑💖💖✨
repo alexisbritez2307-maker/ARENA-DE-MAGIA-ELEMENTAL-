@@ -1,0 +1,425 @@
+if game.CoreGui:FindFirstChild("ALEX_CrownHub_V1") then
+    game.CoreGui["ALEX_CrownHub_V1"]:Destroy()
+end
+
+local plr = game.Players.LocalPlayer
+local silentCollectActive = false
+local manualSpamActive = false
+local rainbowActive = false
+local autoSpam100xActive = false
+local autoSnowPowerActive = false
+_G.PotenciaImpacto = 5
+_G.WalkSpeedValue = 16
+
+-- =============================================================================
+-- INTERFAZ CYBER PREMIUM V1 - ALEX👑 EDITION (ULTIMATE)
+-- =============================================================================
+local MainGui = Instance.new("ScreenGui")
+MainGui.Name = "ALEX_CrownHub_V1"
+MainGui.Parent = game:GetService("CoreGui") or plr:WaitForChild("PlayerGui")
+MainGui.ResetOnSpawn = false
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = MainGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 16)
+MainFrame.Position = UDim2.new(0.25, 0, 0.2, 0)
+MainFrame.Size = UDim2.fromOffset(600, 380)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+local MainCorner = Instance.new("UICorner") MainCorner.CornerRadius = UDim.new(0, 8) MainCorner.Parent = MainFrame
+local MainStroke = Instance.new("UIStroke") MainStroke.Color = Color3.fromRGB(0, 255, 120) MainStroke.Thickness = 2 MainStroke.Parent = MainFrame
+
+local TitleBar = Instance.new("TextLabel")
+TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.BackgroundColor3 = Color3.fromRGB(8, 8, 12)
+TitleBar.Font = Enum.Font.GothamBold
+TitleBar.Text = "  ⚡ ALEX👑 HUB // ENGINE V1 (ULTIMATE)"
+TitleBar.TextColor3 = Color3.fromRGB(0, 255, 120)
+TitleBar.TextSize = 13
+TitleBar.TextXAlignment = Enum.TextXAlignment.Left
+TitleBar.Parent = MainFrame
+
+local TabContainer = Instance.new("Frame")
+TabContainer.Position = UDim2.new(0, 10, 0, 50)
+TabContainer.Size = UDim2.new(0, 130, 1, -60)
+TabContainer.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+TabContainer.Parent = MainFrame
+local TabCorner = Instance.new("UICorner") TabCorner.CornerRadius = UDim.new(0, 6) TabCorner.Parent = TabContainer
+local TabList = Instance.new("UIListLayout") TabList.Parent = TabContainer; TabList.SortOrder = Enum.SortOrder.LayoutOrder; TabList.Padding = UDim.new(0, 4)
+
+local ContentContainer = Instance.new("Frame")
+ContentContainer.Position = UDim2.new(0, 150, 0, 50)
+ContentContainer.Size = UDim2.new(1, -160, 1, -60)
+ContentContainer.BackgroundColor3 = Color3.fromRGB(16, 16, 22)
+ContentContainer.Parent = MainFrame
+local ContentCorner = Instance.new("UICorner") ContentCorner.CornerRadius = UDim.new(0, 6) ContentCorner.Parent = ContentContainer
+
+-- BOTÓN FLOTANTE OPEN/CLOSE
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 120, 0, 40)
+ToggleButton.Position = UDim2.new(0.05, 0, 0.15, 0)
+ToggleButton.Text = "🟢 MENÚ ALEX👑"
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 26)
+ToggleButton.Draggable = true
+ToggleButton.Parent = MainGui
+local BC = Instance.new("UICorner") BC.CornerRadius = UDim.new(0, 8) BC.Parent = ToggleButton
+local BS = Instance.new("UIStroke") BS.Color = Color3.fromRGB(0, 255, 120) BS.Thickness = 1.5 BS.Parent = ToggleButton
+
+ToggleButton.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
+
+-- CREACIÓN DE PÁGINAS LÓGICAS
+local Pages = {}
+local function CreatePage(name)
+    local Page = Instance.new("ScrollingFrame")
+    Page.Size = UDim2.new(1, -10, 1, -10)
+    Page.Position = UDim2.new(0, 5, 0, 5)
+    Page.BackgroundTransparency = 1
+    Page.ScrollBarThickness = 2
+    Page.Visible = false
+    Page.Parent = ContentContainer
+    
+    local List = Instance.new("UIListLayout") List.Parent = Page; List.Padding = UDim.new(0, 6); List.SortOrder = Enum.SortOrder.LayoutOrder
+    List:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function() Page.CanvasSize = UDim2.new(0, 0, 0, List.AbsoluteContentSize.Y + 10) end)
+    Pages[name] = Page
+    
+    local TabBtn = Instance.new("TextButton")
+    TabBtn.Size = UDim2.new(1, -6, 0, 32)
+    TabBtn.BackgroundColor3 = Color3.fromRGB(24, 24, 32)
+    TabBtn.Font = Enum.Font.GothamBold
+    TabBtn.Text = name
+    TabBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+    TabBtn.TextSize = 11
+    TabBtn.Parent = TabContainer
+    local TBC = Instance.new("UICorner") TBC.CornerRadius = UDim.new(0, 4) TBC.Parent = TabBtn
+    
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(Pages) do p.Visible = false end
+        Page.Visible = true
+    end)
+    return Page
+end
+
+local function AddToggle(page, text, callback)
+    local Frame = Instance.new("Frame")
+    Frame.Size = UDim2.new(1, -4, 0, 36)
+    Frame.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+    Frame.Parent = page
+    local FC = Instance.new("UICorner") FC.CornerRadius = UDim.new(0, 4) FC.Parent = Frame
+    
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(0.7, 0, 1, 0)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Text = text
+    Label.Font = Enum.Font.GothamSemibold
+    Label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    Label.TextSize = 12
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+    Label.Parent = Frame
+    
+    local TBtn = Instance.new("TextButton")
+    TBtn.Size = UDim2.fromOffset(50, 22)
+    TBtn.Position = UDim2.new(1, -60, 0.2, 0)
+    TBtn.BackgroundColor3 = Color3.fromRGB(150, 40, 40)
+    TBtn.Text = "OFF"
+    TBtn.Font = Enum.Font.GothamBold
+    TBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TBtn.TextSize = 10
+    TBtn.Parent = Frame
+    local TC = Instance.new("UICorner") TC.CornerRadius = UDim.new(0, 4) TC.Parent = TBtn
+    
+    local state = false
+    TBtn.MouseButton1Click:Connect(function()
+        state = not state
+        TBtn.BackgroundColor3 = state and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(150, 40, 40)
+        TBtn.Text = state and "ON" or "OFF"
+        callback(state)
+    end)
+end
+
+local P_Player = CreatePage("Player")
+local P_Combate = CreatePage("Combate")
+local P_Visuals = CreatePage("Visuales")
+local P_Items = CreatePage("Objetos")
+Pages["Player"].Visible = true
+
+-- --- 👤 PESTAÑA: PLAYER (AQUÍ ESTÁ TU SPEED Y COSITAS) ---
+local SpeedFrame = Instance.new("Frame")
+SpeedFrame.Size = UDim2.new(1, -4, 0, 60)
+SpeedFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+SpeedFrame.Parent = P_Player
+local SFC2 = Instance.new("UICorner") SFC2.CornerRadius = UDim.new(0, 4) SFC2.Parent = SpeedFrame
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(1, 0, 0, 20)
+SpeedLabel.Position = UDim2.new(0, 10, 0, 5)
+SpeedLabel.Text = "Modificar Velocidad (Speed): 16"
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedLabel.TextSize = 11
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Parent = SpeedFrame
+
+local SpeedSlider = Instance.new("TextBox")
+SpeedSlider.Size = UDim2.fromOffset(80, 24)
+SpeedSlider.Position = UDim2.new(1, -95, 0.45, 0)
+SpeedSlider.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
+SpeedSlider.Text = "16"
+SpeedSlider.Font = Enum.Font.GothamBold
+SpeedSlider.TextColor3 = Color3.fromRGB(0, 255, 120)
+SpeedSlider.TextSize = 12
+SpeedSlider.Parent = SpeedFrame
+local SC = Instance.new("UICorner") SC.CornerRadius = UDim.new(0, 4) SC.Parent = SpeedSlider
+
+SpeedSlider.FocusLost:Connect(function()
+    local val = tonumber(SpeedSlider.Text)
+    if val then
+        _G.WalkSpeedValue = val
+        SpeedLabel.Text = "Modificar Velocidad (Speed): " .. tostring(val)
+    else
+        SpeedSlider.Text = tostring(_G.WalkSpeedValue)
+    end
+end)
+
+-- Bucle de velocidad infinita bypass
+task.spawn(function()
+    while true do
+        task.wait(0.01)
+        pcall(function()
+            local hum = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid")
+            if hum and hum.WalkSpeed ~= _G.WalkSpeedValue then
+                hum.WalkSpeed = _G.WalkSpeedValue
+            end
+        end)
+    end
+end)
+
+AddToggle(P_Player, "NoClip (Atravesar Muros)", function(state)
+    local char = plr.Character
+    if state then
+        _G.NoclipActive = game:GetService("RunService").Stepped:Connect(function()
+            if char then
+                for _, v in pairs(char:GetDescendants()) do
+                    if v:IsA("BasePart") then v.CanCollide = false end
+                end
+            end
+        end)
+    else
+        if _G.NoclipActive then _G.NoclipActive:Disconnect() end
+    end
+end)
+
+AddToggle(P_Player, "Infinito Salto (Cositas extra)", function(state)
+    _G.InfJump = state
+    local uis = game:GetService("UserInputService")
+    uis.JumpRequest:Connect(function()
+        if _G.InfJump then
+            pcall(function() plr.Character.Humanoid:ChangeState("Jumping") end)
+        end
+    end)
+end)
+
+-- --- 🔥 PESTAÑA: COMBATE ---
+AddToggle(P_Combate, "💥 POTENCIAR CLICKS (MANUAL)", function(state) manualSpamActive = state end)
+
+local SelectorFrame = Instance.new("Frame")
+SelectorFrame.Size = UDim2.new(1, -4, 0, 65)
+SelectorFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+SelectorFrame.Parent = P_Combate
+local SFC = Instance.new("UICorner") SFC.CornerRadius = UDim.new(0, 4) SFC.Parent = SelectorFrame
+
+local SelectorLabel = Instance.new("TextLabel")
+SelectorLabel.Size = UDim2.new(1, 0, 0, 25)
+SelectorLabel.Position = UDim2.new(0, 10, 0, 2)
+SelectorLabel.Text = "Multiplicador por cada Click:"
+SelectorLabel.Font = Enum.Font.GothamBold
+SelectorLabel.TextColor3 = Color3.fromRGB(0, 255, 120)
+SelectorLabel.TextSize = 12
+SelectorLabel.TextXAlignment = Enum.TextXAlignment.Left
+SelectorLabel.BackgroundTransparency = 1
+SelectorLabel.Parent = SelectorFrame
+
+local ButtonsContainer = Instance.new("Frame")
+ButtonsContainer.Size = UDim2.new(1, -20, 0, 35)
+ButtonsContainer.Position = UDim2.new(0, 10, 0, 28)
+ButtonsContainer.BackgroundTransparency = 1
+ButtonsContainer.Parent = SelectorFrame
+local BLayout = Instance.new("UIListLayout") BLayout.Parent = ButtonsContainer; BLayout.FillDirection = Enum.FillDirection.Horizontal; BLayout.Padding = UDim.new(0, 6)
+
+local opciones = {1, 2, 5, 10, 20, 100}
+local cacheBotones = {}
+
+for _, num in pairs(opciones) do
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.fromOffset(45, 26)
+    Btn.BackgroundColor3 = (num == _G.PotenciaImpacto) and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(35, 35, 45)
+    Btn.Text = "x" .. tostring(num)
+    Btn.Font = Enum.Font.GothamBold
+    Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Btn.TextSize = 11
+    Btn.Parent = ButtonsContainer
+    local BC = Instance.new("UICorner") BC.CornerRadius = UDim.new(0, 4) BC.Parent = Btn
+    
+    cacheBotones[num] = Btn
+    Btn.MouseButton1Click:Connect(function()
+        _G.PotenciaImpacto = num
+        for k, v in pairs(cacheBotones) do
+            v.BackgroundColor3 = (k == num) and Color3.fromRGB(0, 150, 100) or Color3.fromRGB(35, 35, 45)
+        end
+    end)
+end
+
+-- NUEVO: 100x CLICK SPAM TOGGLE
+AddToggle(P_Combate, "🔥 100x CLICK SPAM (AUTO)", function(state) autoSpam100xActive = state end)
+
+-- --- 🌈 PESTAÑA: VISUALES (AQUÍ ESTÁ TU ARCOIRIS) ---
+AddToggle(P_Visuals, "🌈 INTERFAZ CHROMA ARCOIRIS", function(state)
+    rainbowActive = state
+    task.spawn(function()
+        while rainbowActive do
+            for hue = 0, 1, 0.01 do
+                if not rainbowActive then break end
+                local color = Color3.fromHSV(hue, 1, 1)
+                MainStroke.Color = color
+                BS.Color = color
+                TitleBar.TextColor3 = color
+                SelectorLabel.TextColor3 = color
+                SpeedSlider.TextColor3 = color
+                task.wait(0.03)
+            end
+        end
+        MainStroke.Color = Color3.fromRGB(0, 255, 120)
+        BS.Color = Color3.fromRGB(0, 255, 120)
+        TitleBar.TextColor3 = Color3.fromRGB(0, 255, 120)
+    end)
+end)
+
+-- --- 💎 PESTAÑA: OBJETOS ---
+AddToggle(P_Items, "💎 AUTO-AGARRAR DIAMANTES", function(state) silentCollectActive = state end)
+AddToggle(P_Items, "❄️ AUTO PODER DE NIEVE (FORZAR DIAMANTES)", function(state) autoSnowPowerActive = state end)
+
+-- =============================================================================
+-- MOTORES DE COMBATE Y OBJETOS
+-- =============================================================================
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if manualSpamActive and not gameProcessed then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            pcall(function()
+                local char = plr.Character
+                local tool = char and char:FindFirstChildOfClass("Tool")
+                if tool then
+                    tool:Activate()
+                    local mousePos = game:GetService("UserInputService"):GetMouseLocation()
+                    for _, remoto in pairs(tool:GetDescendants()) do
+                        if remoto:IsA("RemoteEvent") then
+                            for i = 1, _G.PotenciaImpacto do
+                                task.spawn(function() remoto:FireServer(mousePos) end)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- Motor Auto Spam 100x (NUEVO)
+task.spawn(function()
+    while true do
+        task.wait(0.015) -- Spam ultra rápido (~66 veces por segundo)
+        if autoSpam100xActive then
+            pcall(function()
+                local char = plr.Character
+                local tool = char and char:FindFirstChildOfClass("Tool")
+                if tool then
+                    tool:Activate()
+                    local mousePos = game:GetService("UserInputService"):GetMouseLocation()
+                    for _, remoto in pairs(tool:GetDescendants()) do
+                        if remoto:IsA("RemoteEvent") then
+                            for i = 1, 100 do
+                                task.spawn(function()
+                                    remoto:FireServer(mousePos)
+                                end)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.05) -- Más rápido para atrapar regalos
+        if silentCollectActive then
+            pcall(function()
+                local char = plr.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    for _, objeto in pairs(workspace:GetDescendants()) do
+                        if objeto:IsA("BasePart") or objeto:IsA("MeshPart") then
+                            local nLower = objeto.Name:lower()
+                            -- Ahora también agarra regalos, gifts, presents, cajas, etc.
+                            if string.find(nLower, "diamond") or string.find(nLower, "gem") or string.find(nLower, "diamante") 
+                               or string.find(nLower, "regalo") or string.find(nLower, "gift") or string.find(nLower, "present") 
+                               or string.find(nLower, "caja") or string.find(nLower, "box") or string.find(nLower, "reward") 
+                               or string.find(nLower, "prize") or string.find(nLower, "regalos") then
+                                local touch = objeto:FindFirstChildOfClass("TouchTransmitter")
+                                if touch then
+                                    firetouchinterest(hrp, objeto, 0)
+                                    task.wait(0.01)
+                                    firetouchinterest(hrp, objeto, 1)
+                                    
+                                    -- Si tienes el PODER DE NIEVE u otra herramienta equipada, la activa automáticamente en el regalo
+                                    local tool = char and char:FindFirstChildOfClass("Tool")
+                                    if tool then
+                                        pcall(function() tool:Activate() end)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- =============================================================================
+-- NUEVO: AUTO PODER DE NIEVE (para forzar diamantes en regalos)
+-- =============================================================================
+task.spawn(function()
+    while true do
+        task.wait(0.08)
+        if autoSnowPowerActive then
+            pcall(function()
+                local char = plr.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                local tool = char and char:FindFirstChildOfClass("Tool")
+                
+                if hrp and tool then
+                    for _, objeto in pairs(workspace:GetDescendants()) do
+                        if (objeto:IsA("BasePart") or objeto:IsA("MeshPart")) then
+                            local nLower = objeto.Name:lower()
+                            if string.find(nLower, "regalo") or string.find(nLower, "gift") or string.find(nLower, "present") 
+                               or string.find(nLower, "caja") or string.find(nLower, "box") or string.find(nLower, "reward") then
+                                
+                                -- Si el regalo está cerca, activa el poder de nieve repetidamente
+                                if (objeto.Position - hrp.Position).Magnitude < 60 then
+                                    pcall(function() tool:Activate() end)
+                                    task.wait(0.03)
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
